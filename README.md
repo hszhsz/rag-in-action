@@ -33,4 +33,18 @@
 
 ## 目录
 
-RAGFlow 各章节文件位于 [`ragflow/`](./ragflow/)。
+RAGFlow 各章节文件位于 [`ragflow/`](./ragflow/)：
+
+1. [第 1 章 项目全景与运行时入口](./ragflow/ch01-overview-and-runtime-entry.md)
+2. [第 2 章 深度文档理解（DeepDoc）](./ragflow/ch02-deepdoc-document-understanding.md)
+3. [第 3 章 分块模板系统](./ragflow/ch03-chunking-templates.md)
+4. [第 4 章 任务执行器与异步管线](./ragflow/ch04-task-executor-async-pipeline.md)
+5. [第 5 章 索引与向量化](./ragflow/ch05-indexing-and-embedding.md)
+6. [第 6 章 检索与融合重排](./ragflow/ch06-retrieval-and-rerank.md)
+7. [第 7 章 GraphRAG 知识图谱](./ragflow/ch07-graphrag.md)
+8. [第 8 章 RAPTOR 树状摘要](./ragflow/ch08-raptor.md)
+9. [第 9 章 Agent 与编排画布](./ragflow/ch09-agent-canvas.md)
+10. [第 10 章 沙箱与代码执行](./ragflow/ch10-sandbox.md)
+11. [第 11 章 模型接入层](./ragflow/ch11-model-access-layer.md)
+12. [第 12 章 MCP 接入](./ragflow/ch12-mcp.md)
+13. [第 13 章 收尾：可迁移的 RAG 工程原则](./ragflow/ch13-engineering-principles.md)
