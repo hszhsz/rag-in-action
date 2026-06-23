@@ -33,4 +33,4 @@
 
 ## 目录
 
-章节文件位于 [`chapters/`](./chapters/)。
+RAGFlow 各章节文件位于 [`ragflow/`](./ragflow/)。
