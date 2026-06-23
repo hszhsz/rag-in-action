@@ -150,3 +150,41 @@ Quivr 各章节文件位于 [`quivr/`](./quivr/)：
 9. [第 9 章 重排与上下文压缩](./quivr/ch09-rerank-and-compression.md)
 10. [第 10 章 工具路由与 Agent](./quivr/ch10-tool-routing-agent.md)
 11. [第 11 章 流式回答、序列化与工程原则收尾](./quivr/ch11-streaming-serialization-and-principles.md)
+
+## 第五部 Langchain-Chatchat
+
+第五个解构对象是 [Langchain-Chatchat](https://github.com/chatchat-space/Langchain-Chatchat)——一个**面向中文、可离线部署的 RAG 与 Agent 应用**。与前四部不同，它的取舍处处指向"开箱即用"与"吃掉生态碎片"：从默认中文模型与一键 `init` 部署，到用 `KBService` 一层抽象统一七种向量库、用 `MODEL_PLATFORMS` 统一四类推理后端、用 `agents_registry` 的 `agent_type` 统一多模型族，它反复用一层薄契约把异构的 LangChain 生态收口。技术栈是 Python + FastAPI + Streamlit 多进程，深度复用 LangChain。章节弧线沿数据流由外到内展开：从多进程启动与分层配置，到中文 loader/splitter，到知识库服务与向量缓存，再到 RAG 对话、Agent 注册表、工具系统与 MCP，最后是统一的 API 与模型接入层：
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 项目全景与多进程启动 | monorepo/libs 结构、`spawn` + `Manager().Event()`、FastAPI/Streamlit 双进程、Click CLI |
+| 第 2 章 | 配置系统 Settings | `pydantic-settings` 分层、yaml 持久化与热重载、`MODEL_PLATFORMS`、默认值取向 |
+| 第 3 章 | 文档加载器 | `LOADER_DICT` 扩展名路由、RapidOCR loaders、`get_ocr` paddle→onnx 回退、统一产出 `Document` |
+| 第 4 章 | 中文文本切分 | `ChineseRecursiveTextSplitter` 标点感知、`zh_title_enhance`、`make_text_splitter` 工厂 |
+| 第 5 章 | 知识库服务抽象层 | `KBService` 模板方法、`SupportedVSType` + 工厂、七种向量库同一契约 |
+| 第 6 章 | 向量缓存与嵌入 | `ThreadSafeObject`/`CachePool` LRU、`KBFaissPool` 双层锁、多后端 embedding 批处理 |
+| 第 7 章 | 知识库文档管理与迁移 | 向量库+SQLite 双写一致性、`folder2db`/`prune`、`with_session` 事务、多线程切分 |
+| 第 8 章 | 检索器与重排 | `get_Retriever` 工厂、vectorstore/ensemble(BM25+向量)/milvus、CrossEncoder 重排 |
+| 第 9 章 | RAG 对话链路 | `kb_chat` 检索→拼 context→流式生成、`return_direct` 逃生通道、异步流式三件套 |
+| 第 10 章 | Agent 注册表与多模型适配 | `agents_registry` 按 `agent_type` 分发、`PlatformToolsAgentExecutor`、模型族 workaround |
+| 第 11 章 | 工具系统 Tools Factory | `regist_tool` 自动注册、`BaseTool` monkeypatch、`return_direct` 工具、`BaseToolOutput` |
+| 第 12 章 | MCP 集成 | `MultiServerMCPClient`、`MCPStructuredTool` 契约转换、连接持久化、与 agent 打通线 |
+| 第 13 章 | API 服务与模型接入 | `create_app` 路由组装、OpenAI 兼容层、`MODEL_PLATFORMS` 统一异构推理后端 |
+| 第 14 章 | 工程原则收尾与全书结语 | Chatchat 设计取向、跨五部书归纳的七条可迁移工程原则、全书结语 |
+
+Langchain-Chatchat 各章节文件位于 [`langchain-chatchat/`](./langchain-chatchat/)：
+
+1. [第 1 章 项目全景与多进程启动](./langchain-chatchat/ch01-overview-and-startup.md)
+2. [第 2 章 配置系统 Settings](./langchain-chatchat/ch02-settings-configuration.md)
+3. [第 3 章 文档加载器](./langchain-chatchat/ch03-document-loaders.md)
+4. [第 4 章 中文文本切分](./langchain-chatchat/ch04-chinese-text-splitting.md)
+5. [第 5 章 知识库服务抽象层](./langchain-chatchat/ch05-kb-service-abstraction.md)
+6. [第 6 章 向量缓存与嵌入](./langchain-chatchat/ch06-vector-cache-and-embeddings.md)
+7. [第 7 章 知识库文档管理与迁移](./langchain-chatchat/ch07-doc-management-and-migration.md)
+8. [第 8 章 检索器与重排](./langchain-chatchat/ch08-retrievers-and-rerank.md)
+9. [第 9 章 RAG 对话链路](./langchain-chatchat/ch09-rag-chat-pipeline.md)
+10. [第 10 章 Agent 注册表与多模型适配](./langchain-chatchat/ch10-agent-registry.md)
+11. [第 11 章 工具系统 Tools Factory](./langchain-chatchat/ch11-tools-factory.md)
+12. [第 12 章 MCP 集成](./langchain-chatchat/ch12-mcp-integration.md)
+13. [第 13 章 API 服务与模型接入](./langchain-chatchat/ch13-api-server-and-model-access.md)
+14. [第 14 章 工程原则收尾与全书结语](./langchain-chatchat/ch14-engineering-principles-and-epilogue.md)
