@@ -118,3 +118,35 @@ LlamaIndex 各章节文件位于 [`llama-index/`](./llama-index/)：
 12. [第 12 章 Workflow 事件驱动编排引擎](./llama-index/ch12-workflow-orchestration.md)
 13. [第 13 章 Agent 系统](./llama-index/ch13-agent-system.md)
 14. [第 14 章 可观测性与工程原则收尾](./llama-index/ch14-instrumentation-and-engineering-principles.md)
+
+## 第四部 Quivr
+
+第四个解构对象是 [Quivr](https://github.com/QuivrHQ/quivr)——准确说是它的核心库 `quivr-core`（Quivr.com 的"大脑"，Python 3.10+）。与前三部都不同，它是一个把 **LangChain + LangGraph 当地基**、自己只写薄薄一层"编排与策略"胶水的库。它最鲜明的一招，是把 RAG 流程做成**配置驱动的 LangGraph**：图的拓扑（节点、边、条件边）不是写死的函数调用链，而是运行时从一组 `NodeConfig` 用 `getattr(self, node.name)` 拼装出来的——同一套引擎代码，换一组节点配置就能从标准 RAG 变成带 web search 的 agent、变成 zendesk 客服助手。章节弧线沿数据流由外到内展开：从 `Brain` 总入口，到文件存储、解析切分、模型与向量库两大外部能力，最后是配置驱动的 LangGraph 把检索、重排、工具、生成、流式输出编排成一条可按场景重组的问答流水线：
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 库定位与 Brain 全景 | `quivr-core` 定位、`Brain` 总指挥、`afrom_files` 默认装配、零配置即可用 |
+| 第 2 章 | 文件抽象与 Storage 存储层 | `QuivrFile` `__slots__`/sha1 指纹、`StorageBase` ABC、Transparent/Local 双实现 |
+| 第 3 章 | Processor 注册表与多格式解析 | `MappingProxyType` 只读注册表、优先级堆、惰性导入、`ProcessorBase` 模板方法 |
+| 第 4 章 | 切分策略与 SplitterConfig | `SplitterConfig` 默认值、手写递归字符切分、Tika/tiktoken 切分路径 |
+| 第 5 章 | LLMEndpoint 与多供应商模型配置 | `LLMEndpoint.from_config` 工厂、`SecretStr` 守卫、`LLMTokenizer` LRU 缓存、能力探测 |
+| 第 6 章 | 嵌入与向量库 | `default_embedder`、`build_default_vectordb`、FAISS 默认、`save`/`load` 守卫 |
+| 第 7 章 | 配置驱动的 LangGraph 工作流 | `NodeConfig`/`WorkflowConfig`、`_build_workflow` 反射建图、`final_nodes`、首节点校验 |
+| 第 8 章 | RAG 节点详解 | `AgentState` 契约、`filter_history`/`rewrite`/`retrieve`/`generate` 节点、增量状态更新 |
+| 第 9 章 | 重排与上下文压缩 | `get_reranker` 回退 `IdempotentCompressor`、`ContextualCompressionRetriever`、`dynamic_retrieve` 自适应 |
+| 第 10 章 | 工具路由与 Agent | `tool_routing` + `Send` 分派、`LLMToolFactory`、`ToolWrapper` 契约、模糊匹配纠错 |
+| 第 11 章 | 流式回答、序列化与工程原则收尾 | `answer_astream` 订阅 `astream_events`、`reduce_rag_context` 预算退让、`BrainSerialized` 判别式联合、跨四部书的七条可迁移原则 |
+
+Quivr 各章节文件位于 [`quivr/`](./quivr/)：
+
+1. [第 1 章 库定位与 Brain 全景](./quivr/ch01-overview-and-brain.md)
+2. [第 2 章 文件抽象与 Storage 存储层](./quivr/ch02-file-and-storage.md)
+3. [第 3 章 Processor 注册表与多格式解析](./quivr/ch03-processor-registry.md)
+4. [第 4 章 切分策略与 SplitterConfig](./quivr/ch04-splitter-config.md)
+5. [第 5 章 LLMEndpoint 与多供应商模型配置](./quivr/ch05-llm-endpoint.md)
+6. [第 6 章 嵌入与向量库](./quivr/ch06-embedding-and-vectordb.md)
+7. [第 7 章 配置驱动的 LangGraph 工作流](./quivr/ch07-config-driven-langgraph.md)
+8. [第 8 章 RAG 节点详解](./quivr/ch08-rag-nodes.md)
+9. [第 9 章 重排与上下文压缩](./quivr/ch09-rerank-and-compression.md)
+10. [第 10 章 工具路由与 Agent](./quivr/ch10-tool-routing-agent.md)
+11. [第 11 章 流式回答、序列化与工程原则收尾](./quivr/ch11-streaming-serialization-and-principles.md)
