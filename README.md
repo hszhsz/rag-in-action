@@ -224,3 +224,41 @@ LightRAG 各章节文件位于 [`lightrag/`](./lightrag/)：
 11. [第 11 章 API 服务与路由](./lightrag/ch11-api-server.md)
 12. [第 12 章 运维工具与缓存迁移](./lightrag/ch12-tools-and-maintenance.md)
 13. [第 13 章 工程原则收尾与全书结语](./lightrag/ch13-engineering-principles.md)
+
+## 第七部 GraphRAG
+
+第七个解构对象是 [GraphRAG](https://github.com/microsoft/graphrag)——微软出品、版本 3.1.0 的工业级 **graph-based RAG** 引擎。它和第六部 LightRAG 同属"以知识图谱为核心"的路线,却把图谱 RAG 做到了另一个工程量级:用一个八包的 uv-workspace monorepo 把切分、输入、LLM、缓存、存储、向量库都拆成可独立 `pip install` 的子包;索引侧把"文档 → text unit → 实体关系抽取 → 图谱终化与剪枝 → Leiden 层次社区检测 → 社区报告 → 向量嵌入"组织成一条由 `PipelineFactory` 注册、可重排、可观测的 workflow 流水线;查询侧则围绕同一份 parquet 图谱产物给出 local(细节)、global(map-reduce 概览)、drift(全局起步+局部深挖)、basic(纯向量基线)四种检索投影。它最鲜明的取舍:把横切关注点(限流/重试/缓存/metrics)收口进 `graphrag-llm` 的可组合中间件管线、把 LLM 统一压在 LiteLLM 单一底座上,并把 parquet 表作为权威源、向量索引作为可重算的派生物。章节弧线沿数据流由外到内、由索引到查询展开:
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 项目全景与 monorepo 架构 | 八包 uv-workspace、子包解耦、版本单点、索引/查询两侧分野 |
+| 第 2 章 | 配置系统 GraphRagConfig | `load_config`、Pydantic models、`defaults`、env 插值、`init` 脚手架 |
+| 第 3 章 | 输入加载 Input | `graphrag-input` 包、csv/json/jsonl reader、factory、文档哈希 |
+| 第 4 章 | 文本切分 Chunking | `graphrag-chunking` 包、token/sentence chunker、注入式编解码、字符偏移 |
+| 第 5 章 | 图谱抽取 Extract Graph | LLM 实体/关系抽取、分隔符约定、gleaning 多轮补抽、跨片段合并溯源 |
+| 第 6 章 | 描述摘要与图谱终化 | `summarize_descriptions` 滚动归并、`finalize_graph` 补字段、`prune_graph` 剪枝 |
+| 第 7 章 | 社区检测 Leiden | `create_communities`、graspologic `hierarchical_leiden`、层次社区树、确定性 |
+| 第 8 章 | 社区报告生成 | 自底向上层级生成、子社区报告替代机制、结构化 JSON 输出、text 变体 |
+| 第 9 章 | 向量嵌入与协变量 | `generate_text_embeddings`、`graphrag-vectors` 包、LanceDB、`extract_covariates` claims |
+| 第 10 章 | 索引流水线编排 | `PipelineFactory`、`run_pipeline`、统一 `run_workflow` 契约、`IndexingMethod`、增量更新 |
+| 第 11 章 | Local Search 局部检索 | `LocalSearchMixedContext`、种子实体映射、混合上下文与 token 预算分配 |
+| 第 12 章 | Global Search 全局检索 | `GlobalCommunityContext`、map-reduce、key points 评分、动态社区选择 |
+| 第 13 章 | DRIFT 与 Basic Search | primer/action/state 推理树、纯向量基线、`api/query` 四模式统一收口 |
+| 第 14 章 | LLM/缓存/存储与工程原则收尾 | `graphrag-llm` 中间件管线、`graphrag-cache`/`graphrag-storage` 三层解耦、`prompt_tune`、跨七部书工程原则与全书结语 |
+
+GraphRAG 各章节文件位于 [`graphrag-ms/`](./graphrag-ms/)：
+
+1. [第 1 章 项目全景与 monorepo 架构](./graphrag-ms/ch01-overview-and-monorepo.md)
+2. [第 2 章 配置系统 GraphRagConfig](./graphrag-ms/ch02-configuration.md)
+3. [第 3 章 输入加载 Input](./graphrag-ms/ch03-input-loading.md)
+4. [第 4 章 文本切分 Chunking](./graphrag-ms/ch04-chunking.md)
+5. [第 5 章 图谱抽取 Extract Graph](./graphrag-ms/ch05-extract-graph.md)
+6. [第 6 章 描述摘要与图谱终化](./graphrag-ms/ch06-summarize-finalize.md)
+7. [第 7 章 社区检测 Leiden](./graphrag-ms/ch07-community-detection.md)
+8. [第 8 章 社区报告生成](./graphrag-ms/ch08-community-reports.md)
+9. [第 9 章 向量嵌入与协变量](./graphrag-ms/ch09-embeddings-covariates.md)
+10. [第 10 章 索引流水线编排](./graphrag-ms/ch10-index-pipeline.md)
+11. [第 11 章 Local Search 局部检索](./graphrag-ms/ch11-local-search.md)
+12. [第 12 章 Global Search 全局检索](./graphrag-ms/ch12-global-search.md)
+13. [第 13 章 DRIFT 与 Basic Search](./graphrag-ms/ch13-drift-basic-search.md)
+14. [第 14 章 LLM/缓存/存储与工程原则收尾](./graphrag-ms/ch14-infrastructure-and-principles.md)
