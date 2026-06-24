@@ -262,3 +262,41 @@ GraphRAG 各章节文件位于 [`graphrag-ms/`](./graphrag-ms/)：
 12. [第 12 章 Global Search 全局检索](./graphrag-ms/ch12-global-search.md)
 13. [第 13 章 DRIFT 与 Basic Search](./graphrag-ms/ch13-drift-basic-search.md)
 14. [第 14 章 LLM/缓存/存储与工程原则收尾](./graphrag-ms/ch14-infrastructure-and-principles.md)
+
+## 第八部 Haystack
+
+第八个、也是全书最后一个解构对象是 [Haystack](https://github.com/deepset-ai/haystack)——deepset 出品、版本 2.31.0-rc0 的可组合 LLM 编排框架。如果说前七部各自代表一种"做完整 RAG 产品"的路线，Haystack 走的是另一条路：它不预设某种 RAG 形态，而是把一切都做成可拼装的乐高积木——每个能力都是一个声明了类型化输入输出端口、实现 `run()` 返回 dict、可 `to_dict`/`from_dict` 序列化的 `@component`；组件按数据契约连成一张可序列化的有向图 `Pipeline`；调度器用优先级队列数据驱动地决定谁先跑；`DocumentStore` 用 Protocol 而非继承定义存储契约；工具、Agent、SuperComponent 在同一套契约上层层复合。它最鲜明的取舍：用统一的最小数据契约（`Document`/`ChatMessage`）换可组合性，用轻量 `__init__` + 重量 `warm_up()` 分离配置与加载，把编排从代码抽成可存盘、可断点续跑的数据，并把追踪、遥测、评估这些横切关注点织进基座。章节弧线沿"契约 → 数据模型 → 流水线构建与执行 → 组件家族 → Agent → 评估收尾"由内核到外围展开：
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 框架全景与 @component 契约 | 乐高式编排哲学、`@component` 装饰器、输入输出 socket、`run()` dict 契约 |
+| 第 2 章 | 核心数据模型 Dataclasses | `Document`/`ChatMessage`/`Answer`/`ByteStream`、统一最小数据契约、序列化 |
+| 第 3 章 | Pipeline 图构建与连接 | `MultiDiGraph`、`add_component`/`connect`、socket 类型兼容校验 |
+| 第 4 章 | Pipeline 执行引擎与调度 | `_run_component`、`component_checks`、`FIFOPriorityQueue`、`ComponentPriority.BLOCKED` |
+| 第 5 章 | 序列化、YAML 与断点 | `component_to_dict`/`from_dict`、`import_class_by_name`、`YamlMarshaller`、snapshot 断点 |
+| 第 6 章 | 文档转换与预处理切分 | converters 统一契约、`DocumentSplitter`/`Recursive`/`Hierarchical`、`DocumentCleaner` |
+| 第 7 章 | DocumentStore 抽象与内存实现 | `DocumentStore` Protocol、`DuplicatePolicy`、filter DSL、InMemory BM25（BM25L 默认） |
+| 第 8 章 | 嵌入器 Embedders | Text vs Document 嵌入器、`warm_up`、backend 缓存、`meta_fields_to_embed` |
+| 第 9 章 | 检索器与重排器 | 检索器作为 store 包装、AutoMerging/SentenceWindow、cross-encoder、RRF（k=61） |
+| 第 10 章 | 生成器与 Prompt 构建 | `OpenAIChatGenerator`、流式、工具调用、`ChatPromptBuilder` Jinja2 沙箱、`AnswerBuilder` |
+| 第 11 章 | 路由、汇合与分支控制流 | `ConditionalRouter`、`DocumentJoiner`（RRF/DBSF）、`BranchJoiner`、`JsonSchemaValidator` |
+| 第 12 章 | 工具系统 Tool 与 Toolset | `Tool` dataclass、`ComponentTool`/`PipelineTool`、`Toolset`、`State`（merge/replace） |
+| 第 13 章 | Agent 与 SuperComponent | Agent think-act 循环、`exit_conditions`、`State`、SuperComponent socket 重映射 |
+| 第 14 章 | 评估、可观测性与工程原则收尾 | `EvaluationRunResult`、`LLMEvaluator`/Faithfulness、`Tracer`/`ProxyTracer` 代理、隐私默认关闭、PostHog 遥测、跨八部书工程原则与全书结语 |
+
+Haystack 各章节文件位于 [`haystack/`](./haystack/)：
+
+1. [第 1 章 框架全景与 @component 契约](./haystack/ch01-overview-and-component.md)
+2. [第 2 章 核心数据模型 Dataclasses](./haystack/ch02-dataclasses.md)
+3. [第 3 章 Pipeline 图构建与连接](./haystack/ch03-pipeline-build.md)
+4. [第 4 章 Pipeline 执行引擎与调度](./haystack/ch04-pipeline-execution.md)
+5. [第 5 章 序列化、YAML 与断点](./haystack/ch05-serialization-breakpoints.md)
+6. [第 6 章 文档转换与预处理切分](./haystack/ch06-converters-preprocessors.md)
+7. [第 7 章 DocumentStore 抽象与内存实现](./haystack/ch07-document-store.md)
+8. [第 8 章 嵌入器 Embedders](./haystack/ch08-embedders.md)
+9. [第 9 章 检索器与重排器](./haystack/ch09-retrievers-rankers.md)
+10. [第 10 章 生成器与 Prompt 构建](./haystack/ch10-generators-builders.md)
+11. [第 11 章 路由、汇合与分支控制流](./haystack/ch11-routers-joiners.md)
+12. [第 12 章 工具系统 Tool 与 Toolset](./haystack/ch12-tools.md)
+13. [第 13 章 Agent 与 SuperComponent](./haystack/ch13-agent-supercomponent.md)
+14. [第 14 章 评估、可观测性与工程原则收尾](./haystack/ch14-evaluation-observability-principles.md)
