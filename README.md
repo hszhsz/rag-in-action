@@ -188,3 +188,39 @@ Langchain-Chatchat 各章节文件位于 [`langchain-chatchat/`](./langchain-cha
 12. [第 12 章 MCP 集成](./langchain-chatchat/ch12-mcp-integration.md)
 13. [第 13 章 API 服务与模型接入](./langchain-chatchat/ch13-api-server-and-model-access.md)
 14. [第 14 章 工程原则收尾与全书结语](./langchain-chatchat/ch14-engineering-principles-and-epilogue.md)
+
+## 第六部 LightRAG
+
+第六个解构对象是 [LightRAG](https://github.com/HKUDS/LightRAG)——HKUDS 出品、强调"简单且快"的 **graph-based RAG** 系统（pip `lightrag-hku`，Python 3.10，论文 arXiv 2410.05779）。与前五部最根本的分野，是它把**知识图谱放在系统正中心**：用 LLM 把每个 chunk 抽成实体与关系三元组、合并成一张图，检索则是图上的 low-level（具体实体）与 high-level（抽象关系）双层投影，默认 `mix` 模式再融合朴素向量召回。它还有两处鲜明取舍：把全部持久化收敛成四个存储 ABC、十余种后端可插拔，且明确"知识图谱 + `text_chunks` KV 是权威源、三个向量库只是可重算的派生物"；以及用一层 `shared_storage` 横切，让同一套代码既能单进程 asyncio 跑、又能多 worker `lightrag-gunicorn` 安全运行。章节弧线由外到内、由数据摄入到检索生成展开：
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 项目全景与 LightRAG 类 | `LightRAG` dataclass 总入口、monorepo、版本单点、三 Mixin、存储生命周期 |
+| 第 2 章 | 存储抽象与四类基类 | `base.py` 四个 ABC、`StorageNameSpace`、`index_done_callback` 延迟落盘契约、`QueryParam`/`DocStatus` |
+| 第 3 章 | 文本切分 Chunker | token 切分、段落语义切分、chunk 元数据 |
+| 第 4 章 | 文档解析 Parser | `parser/` 路由、docx/markdown、docling/mineru 外部解析器 |
+| 第 5 章 | 实体关系抽取 | `operate.py` `extract_entities`、tuple 分隔符约定、跨 chunk 合并 `_merge_nodes/edges_then_upsert` |
+| 第 6 章 | 双层检索与查询模式 | `kg_query`、low/high-level 关键词、六种 mode、向量+图融合 |
+| 第 7 章 | 可插拔存储后端 | `STORAGE_IMPLEMENTATIONS` 花名册、`get_storage_class` 工厂、惰性导入、批操作 override |
+| 第 8 章 | 共享存储与并发控制 | `shared_storage.py`、`UnifiedLock`/`KeyedUnifiedLock`、update flags、全局并发租约 |
+| 第 9 章 | 文档处理管线 Pipeline | 三段级联队列、enqueue/process 分离、断点续跑、失败隔离、双写一致 |
+| 第 10 章 | LLM 接入与多供应商绑定 | 函数式契约、`openai_complete_if_cache`、`binding_options` 配置即数据、rerank、多模态 |
+| 第 11 章 | API 服务与路由 | `create_app` 工厂、lifespan、鉴权、文档/查询/图谱路由、Ollama 兼容层、多 worker |
+| 第 12 章 | 运维工具与缓存迁移 | `tools/` 缓存迁移、`rebuild_vdb` 权威源重建、可视化、RAGAS 评估 |
+| 第 13 章 | 工程原则收尾与全书结语 | LightRAG 设计取向、跨六部书归纳的七条可迁移工程原则、全书结语 |
+
+LightRAG 各章节文件位于 [`lightrag/`](./lightrag/)：
+
+1. [第 1 章 项目全景与 LightRAG 类](./lightrag/ch01-overview-and-lightrag-class.md)
+2. [第 2 章 存储抽象与四类基类](./lightrag/ch02-storage-abstraction-base.md)
+3. [第 3 章 文本切分 Chunker](./lightrag/ch03-chunking.md)
+4. [第 4 章 文档解析 Parser](./lightrag/ch04-document-parsing.md)
+5. [第 5 章 实体关系抽取](./lightrag/ch05-entity-relation-extraction.md)
+6. [第 6 章 双层检索与查询模式](./lightrag/ch06-dual-level-retrieval.md)
+7. [第 7 章 可插拔存储后端](./lightrag/ch07-storage-backends.md)
+8. [第 8 章 共享存储与并发控制](./lightrag/ch08-shared-storage-concurrency.md)
+9. [第 9 章 文档处理管线 Pipeline](./lightrag/ch09-pipeline.md)
+10. [第 10 章 LLM 接入与多供应商绑定](./lightrag/ch10-llm-bindings.md)
+11. [第 11 章 API 服务与路由](./lightrag/ch11-api-server.md)
+12. [第 12 章 运维工具与缓存迁移](./lightrag/ch12-tools-and-maintenance.md)
+13. [第 13 章 工程原则收尾与全书结语](./lightrag/ch13-engineering-principles.md)
