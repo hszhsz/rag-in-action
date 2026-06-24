@@ -265,7 +265,7 @@ GraphRAG 各章节文件位于 [`graphrag-ms/`](./graphrag-ms/)：
 
 ## 第八部 Haystack
 
-第八个、也是全书最后一个解构对象是 [Haystack](https://github.com/deepset-ai/haystack)——deepset 出品、版本 2.31.0-rc0 的可组合 LLM 编排框架。如果说前七部各自代表一种"做完整 RAG 产品"的路线，Haystack 走的是另一条路：它不预设某种 RAG 形态，而是把一切都做成可拼装的乐高积木——每个能力都是一个声明了类型化输入输出端口、实现 `run()` 返回 dict、可 `to_dict`/`from_dict` 序列化的 `@component`；组件按数据契约连成一张可序列化的有向图 `Pipeline`；调度器用优先级队列数据驱动地决定谁先跑；`DocumentStore` 用 Protocol 而非继承定义存储契约；工具、Agent、SuperComponent 在同一套契约上层层复合。它最鲜明的取舍：用统一的最小数据契约（`Document`/`ChatMessage`）换可组合性，用轻量 `__init__` + 重量 `warm_up()` 分离配置与加载，把编排从代码抽成可存盘、可断点续跑的数据，并把追踪、遥测、评估这些横切关注点织进基座。章节弧线沿"契约 → 数据模型 → 流水线构建与执行 → 组件家族 → Agent → 评估收尾"由内核到外围展开：
+第八个解构对象是 [Haystack](https://github.com/deepset-ai/haystack)——deepset 出品、版本 2.31.0-rc0 的可组合 LLM 编排框架。如果说前七部各自代表一种"做完整 RAG 产品"的路线，Haystack 走的是另一条路：它不预设某种 RAG 形态，而是把一切都做成可拼装的乐高积木——每个能力都是一个声明了类型化输入输出端口、实现 `run()` 返回 dict、可 `to_dict`/`from_dict` 序列化的 `@component`；组件按数据契约连成一张可序列化的有向图 `Pipeline`；调度器用优先级队列数据驱动地决定谁先跑；`DocumentStore` 用 Protocol 而非继承定义存储契约；工具、Agent、SuperComponent 在同一套契约上层层复合。它最鲜明的取舍：用统一的最小数据契约（`Document`/`ChatMessage`）换可组合性，用轻量 `__init__` + 重量 `warm_up()` 分离配置与加载，把编排从代码抽成可存盘、可断点续跑的数据，并把追踪、遥测、评估这些横切关注点织进基座。章节弧线沿"契约 → 数据模型 → 流水线构建与执行 → 组件家族 → Agent → 评估收尾"由内核到外围展开：
 
 | 章 | 主题 | 解构焦点 |
 |---|---|---|
@@ -300,3 +300,39 @@ Haystack 各章节文件位于 [`haystack/`](./haystack/)：
 12. [第 12 章 工具系统 Tool 与 Toolset](./haystack/ch12-tools.md)
 13. [第 13 章 Agent 与 SuperComponent](./haystack/ch13-agent-supercomponent.md)
 14. [第 14 章 评估、可观测性与工程原则收尾](./haystack/ch14-evaluation-observability-principles.md)
+
+## 第九部 RAG-Anything
+
+第九个解构对象是 [RAG-Anything](https://github.com/HKUDS/RAG-Anything)——HKUDS 出品、版本 1.3.1 的多模态 RAG 框架。它和前八部最大的不同在于：它不重新发明知识图谱，而是**站在第六部 LightRAG 的肩上**，把 RAG 的能力边界从纯文本扩展到图片、表格、公式、Office 文档等多模态内容。核心类 `RAGAnything` 是一个用 Mixin 组合而成的 `@dataclass`（`class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin)`），整条流水线是：多模态文档经可插拔解析器（MinerU/Docling/PaddleOCR）解析成统一的 `content_list` 数据契约，分流为纯文本（送进 LightRAG 插入）与多模态项（交给图像/表格/公式/通用四件套处理器，生成描述并作为实体插入知识图谱）。它最鲜明的工程取舍：用 `content_list` 这一最小数据契约抹平不同解析器的差异，用注入式的 `llm_model_func`/`vision_model_func`/`embedding_func` 解耦模型选型，用 `inspect.signature` 反射与多级 JSON 回退应对版本漂移与不可靠的 LLM 输出，用重试/断路器/回调把韧性与可观测性织进基座。章节弧线沿"主类与配置 → 解析器 → 处理流水线 → 多模态处理器 → 查询 → 批处理 → 韧性 → 提示收尾"由内核向外围展开：
+
+| 章 | 主题 | 解构焦点 |
+|---|---|---|
+| 第 1 章 | 项目全景与 RAGAnything 主类 | Mixin 组合 `@dataclass`、站在 LightRAG 之上、`_ensure_lightrag_initialized`、生命周期与 `close` |
+| 第 2 章 | 配置系统 RAGAnythingConfig | 环境变量驱动 `field(default=get_env_value(...))`、多模态开关、`__post_init__` 兼容旧字段 |
+| 第 3 章 | 解析器抽象与 Parser 基类 | `Parser` 基类、`content_list` 数据契约、Office/文本→PDF、`_download_file`/`_unique_output_dir`、LibreOffice |
+| 第 4 章 | MinerU/Docling 解析器与插件注册 | MinerU 子进程 CLI vs Docling Python API、Windows 安全路径 MD5、`_CUSTOM_PARSERS` 注册表 |
+| 第 5 章 | 公式抽取与增强 Markdown | OMML→LaTeX AST 访问者 `_HANDLERS`、`enrich_content_list_with_docx_equations`、多后端优雅降级 |
+| 第 6 章 | 文档处理流水线 ProcessorMixin | `process_document_complete` 七步、解析缓存、内容寻址 doc_id、`_convert_to_lightrag_chunks_type_aware` |
+| 第 7 章 | 上下文提取 ContextExtractor | `ContextConfig`/`ContextExtractor`、page vs chunk 模式、token 截断、三种 content_source 适配 |
+| 第 8 章 | 多模态处理器四件套 | `BaseModalProcessor` 模板方法、4 级 JSON 回退、图像/表格/公式/通用、`_create_entity_and_chunk` 入图 |
+| 第 9 章 | 内容工具与文本插入 | `separate_content`、章节栈 `extract_section_path`、`validate_image_file`、`inspect.signature` 版本兼容 |
+| 第 10 章 | 查询系统 QueryMixin | `query`/`aquery`（mode=mix 委托 LightRAG）、`query_with_multimodal`、`[VLM_IMAGE_n]` 占位、缓存键 |
+| 第 11 章 | 批处理 BatchMixin 与 BatchParser | asyncio.Semaphore vs ThreadPoolExecutor 两种并发、`BatchProcessingResult`、dry_run 预览、双层容错 |
+| 第 12 章 | 韧性与可观测性回调 | `retry`/`async_retry` 指数退避、`CircuitBreaker` 三态机、`ProcessingEvent`/`CallbackManager`/`MetricsCallback` |
+| 第 13 章 | 多语言提示与工程原则收尾 | `PromptRegistry` 原子快照、`set_prompt_language` 惰性加载与回退、纯数据语言包、跨九部工程原则与全书结语 |
+
+RAG-Anything 各章节文件位于 [`raganything/`](./raganything/)：
+
+1. [第 1 章 项目全景与 RAGAnything 主类](./raganything/ch01-overview-and-raganything.md)
+2. [第 2 章 配置系统 RAGAnythingConfig](./raganything/ch02-configuration.md)
+3. [第 3 章 解析器抽象与 Parser 基类](./raganything/ch03-parser-abstraction.md)
+4. [第 4 章 MinerU/Docling 解析器与插件注册](./raganything/ch04-parsers-and-plugins.md)
+5. [第 5 章 公式抽取与增强 Markdown](./raganything/ch05-equations-and-markdown.md)
+6. [第 6 章 文档处理流水线 ProcessorMixin](./raganything/ch06-processor-pipeline.md)
+7. [第 7 章 上下文提取 ContextExtractor](./raganything/ch07-context-extractor.md)
+8. [第 8 章 多模态处理器四件套](./raganything/ch08-modal-processors.md)
+9. [第 9 章 内容工具与文本插入](./raganything/ch09-content-utils.md)
+10. [第 10 章 查询系统 QueryMixin](./raganything/ch10-query-mixin.md)
+11. [第 11 章 批处理 BatchMixin 与 BatchParser](./raganything/ch11-batch-processing.md)
+12. [第 12 章 韧性与可观测性回调](./raganything/ch12-resilience-callbacks.md)
+13. [第 13 章 多语言提示与工程原则收尾](./raganything/ch13-prompts-and-principles.md)
